@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0F14">
+<title>Treino v3</title>
+<style>
+  :root{
+    --bg:#0B0F14; --card:#151B23; --elev:#1F2833; --border:#2C3744;
+    --text:#EEF2F6; --text2:#9AA6B2; --orange:#FF7A1A; --green:#3DDC84;
+    --yellow:#FFCC00; --on:#111111;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+  .wrap{max-width:700px;margin:0 auto;padding:20px 12px calc(120px + env(safe-area-inset-bottom))}
+  h1{font-size:30px;line-height:36px;font-weight:600;letter-spacing:-.4px;margin:0}
+  .sub{font-size:16px;line-height:24px;margin:20px 0 0}
+  .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:20px}
+  .tab{min-height:44px;border-radius:10px;font-size:15px;font-weight:700;border:none;
+    padding:6px 0;cursor:pointer;background:var(--card);color:var(--text)}
+  .tab.on{background:var(--orange);color:var(--on)}
+  .daytitle{font-size:17px;font-weight:800;line-height:1.2;margin-top:8px}
+  .summary{display:flex;justify-content:space-between;align-items:center;min-height:40px;margin-top:4px;font-size:14px}
+  .summary .g{color:var(--text2)}
+  .summary .clk{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+  .iniciar{background:var(--green);color:var(--on);border-radius:10px;font-size:16px;font-weight:700;
+    min-height:40px;padding:6px 12px;border:none;cursor:pointer}
+  .bar{height:6px;border-radius:6px;background:var(--elev);overflow:hidden}
+  .bar>div{height:100%;background:var(--green);width:0%}
+  .hint{font-size:12px;color:var(--text2);margin-top:6px}
+  .card{background:var(--card);border-radius:12px;margin-top:8px;overflow:hidden;border-left:4px solid var(--card)}
+  .card.biset{border-left-color:var(--orange)}
+  .chead{display:flex;justify-content:space-between;align-items:center;padding:10px;min-height:52px;cursor:pointer}
+  .cname{font-size:16px;font-weight:800}
+  .cscheme{font-size:13px;color:var(--text2);margin-top:2px}
+  .csub{font-size:12px;color:var(--orange);margin-top:2px}
+  .ccount{font-size:14px;font-weight:800;color:var(--text2);margin-left:8px;white-space:nowrap}
+  .cbody{padding:0 8px 10px}
+  .carga{color:var(--yellow);font-size:13px;margin-bottom:2px}
+  .dicabtn{background:none;border:none;color:var(--orange);font-size:14px;font-weight:700;min-height:28px;padding:0;cursor:pointer}
+  .dica{font-size:13px;color:var(--text2);margin-top:2px}
+  .srow{display:grid;grid-template-columns:26px 1fr 1fr 50px;gap:6px;align-items:center;margin-top:4px}
+  .slab{font-size:15px;font-weight:700}
+  .slab.done{color:var(--green)}
+  .sinp{background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:20px;
+    text-align:center;min-height:46px;padding:6px 2px;color:var(--text);width:100%}
+  .sbtn{height:48px;border-radius:10px;border:2px solid var(--border);background:var(--elev);
+    color:var(--on);font-size:24px;cursor:pointer}
+  .sbtn.done{background:var(--green);border-color:var(--green)}
+  .acts{display:grid;gap:8px;margin-top:14px}
+  .big{min-height:48px;border-radius:10px;font-size:16px;font-weight:700;border:none;cursor:pointer;width:100%}
+  .big.exp{background:var(--orange);color:var(--on)}
+  .big.res{background:var(--elev);color:var(--text)}
+  .zerar{min-height:44px;border-radius:10px;font-size:16px;font-weight:700;border:none;
+    background:var(--card);color:var(--text2);cursor:pointer;width:100%}
+  textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);
+    border-radius:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;padding:8px}
+  .msg{font-size:14px}
+  .foot{font-size:12px;color:var(--text2);line-height:1.4;margin-top:16px}
+  .pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));
+    display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--elev);
+    border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.5);
+    padding:6px 8px;width:min(360px,calc(100vw - 24px))}
+  .pill.done{background:var(--green);color:var(--on)}
+  .pill .big-time{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .pill .lbl{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pill.done .lbl{color:var(--on)}
+  .pbtn{min-height:36px;min-width:40px;border-radius:10px;border:1px solid var(--border);
+    background:var(--elev);color:var(--text);font-size:15px;font-weight:700;cursor:pointer;padding:0 10px}
+  .pbtn.orange{background:var(--orange);color:var(--on);border:none}
+  .pbtn.white{background:#fff;color:var(--on);border:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Treino v3</h1>
+  <p class="sub">Marque a série; o descanso começa sozinho.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="daytitle" id="daytitle"></div>
+  <div class="summary" id="summary"></div>
+  <div class="bar"><div id="barfill"></div></div>
+  <div class="hint">Máquina ocupada &gt;2 min → use o substituto · RIR 0–2</div>
+  <div id="cards"></div>
+  <div class="acts">
+    <button class="big exp" id="btnExport">Exportar cargas</button>
+    <div id="exportBox"></div>
+    <button class="big res" id="btnRestore">Restaurar treino (colar texto exportado)</button>
+    <div id="restoreBox"></div>
+    <div class="msg" id="restoreMsg"></div>
+    <button class="zerar" id="btnZerar">Zerar treino de hoje</button>
+  </div>
+  <div class="foot">Os dados ficam salvos só neste aparelho e navegador. Exporte as cargas e cole na conversa com o Grok ao terminar se quiser guardar o histórico com ele também.</div>
+</div>
+<div class="pill" id="pill"></div>
+<script>
+const DAYS=[
+ {tab:"Seg",full:"Segunda",title:"Costas (largura) + bíceps",totalSets:14,minutes:60,ex:[
+  {name:"Puxada aberta na polia alta",scheme:"3x8–10 · 2 min",sub:"Puxada articulada Panatta (pegada aberta)",carga:"70 kg (16/11: 70×8 nas 3 últimas)",dica:"Peito alto, cotovelos para baixo e para trás; ombro longe da orelha.",sets:3,rest:120},
+  {name:"Super High Row (Panatta)",scheme:"3x8–10 · 2 min",sub:"Puxada unilateral na polia alta (~25 kg)",carga:"35 kg (16/11: 35×8); sobe quando fizer 10 em todas",dica:"Cotovelos em arco até o quadril; alongue bem em cima.",sets:3,rest:120},
+  {name:"Super Low Row (Panatta)",scheme:"3x10–12 · 2 min",sub:"Remada baixa sentada com triângulo",carga:"25 kg (16/11: 30×8, abaixo da faixa)",dica:"Cotovelos rente ao corpo até o quadril, segure 1 s, sem encolher.",sets:3,rest:120},
+  {name:"Rosca Scott na máquina (Panatta)",scheme:"3x8–12 · 1min30",sub:"Rosca Scott com barra W",carga:"60 kg (16/11: 65–70 × 7–9)",dica:"Axila no apoio; desça até quase estender, sem tirar o cotovelo.",sets:3,rest:90},
+  {name:"Rosca inclinada com halteres",scheme:"2x8–12 · 1min15",sub:"Rosca no cabo de costas (bayesian)",carga:"16 kg (16/11: 18 × 6–8)",dica:"Banco a 45°, braços para trás; desça até alongar bem.",sets:2,rest:75}]},
+ {tab:"Ter",full:"Terça",title:"Peito + ombro + tríceps (peito/ombro em manutenção)",totalSets:13,minutes:55,ex:[
+  {name:"Supino inclinado com halteres",scheme:"3x8–10 · 2 min",sub:"Supino inclinado no Smith",carga:"30 kg cada (26/10)",dica:"Banco a 30°, cotovelos a ~45°, desça até o peito superior.",sets:3,rest:120},
+  {name:"Supino reto na máquina (chest press)",scheme:"2x8–10 · 2 min",sub:"Supino reto com halteres",carga:"45 kg de cada lado (26/10)",dica:"Escápulas retraídas no encosto; volte até alongar.",sets:2,rest:120},
+  {name:"Elevação lateral com halteres",scheme:"3x12–15 · 1 min",sub:"Elevação lateral na polia (unilateral)",carga:"14 kg cada (26/10)",dica:"Suba até a altura do ombro liderando com o cotovelo, sem encolher.",sets:3,rest:60},
+  {name:"Mergulho na máquina (dip machine)",scheme:"3x8–10 · 2 min",sub:"Tríceps na máquina Panatta (80 kg)",dica:"Tronco ereto, cotovelos perto do corpo; desça até passar de 90°.",sets:3,rest:120},
+  {name:"Tríceps corda na polia",scheme:"2x10–12 · 1min15",sub:"Tríceps na polia com barra reta",carga:"25 kg (26/10)",dica:"Cotovelos colados; abra a corda no final e segure 1 s.",sets:2,rest:75}]},
+ {tab:"Qua",full:"Quarta",title:"Pernas (manutenção)",totalSets:15,minutes:55,ex:[
+  {name:"Hack squat (máquina)",scheme:"3x8–10 · 2min30",sub:"Leg press 45°",dica:"Desça até a coxa paralela ou abaixo, quadril no encosto.",sets:3,rest:150},
+  {name:"Stiff com barra",scheme:"3x8–10 · 2 min",sub:"Stiff com halteres",dica:"Quadril para trás, barra rente às pernas, coluna reta.",sets:3,rest:120},
+  {name:"Cadeira flexora",scheme:"3x10–12 · bi-set → próximo",sub:"Mesa flexora",dica:"Flexione ao máximo, segure 1 s, volte devagar.",sets:3,rest:0,biset:true},
+  {name:"Cadeira extensora",scheme:"3x12–15 · 1min30 · bi-set A",sub:"Afundo no Smith",dica:"Estenda até o fim, segure 1 s, desça devagar.",sets:3,rest:90,biset:true},
+  {name:"Panturrilha em pé (máquina)",scheme:"3x12–15 · 1 min",sub:"Panturrilha no leg press 45°",dica:"Alongue bem embaixo, segure 1 s no topo.",sets:3,rest:60}]},
+ {tab:"Qui",full:"Quinta",title:"Costas (espessura) + braços",totalSets:12,minutes:50,ex:[
+  {name:"Remada cavalinho com apoio no peito (T-bar)",scheme:"3x8–10 · 2 min",sub:"Super Low Row (Panatta)",dica:"Peito apoiado; cotovelos para trás e para o quadril, ombro baixo.",sets:3,rest:120},
+  {name:"Remada unilateral na máquina (low row Panatta)",scheme:"3x10–12 · 1min30",sub:"Remada unilateral no cabo sentado",dica:"Um braço por vez; cotovelo até o quadril, sem encolher.",sets:3,rest:90},
+  {name:"Crucifixo inverso no peck deck",scheme:"2x12–15 · 1 min",sub:"Crucifixo inverso na polia (cabos cruzados)",dica:"Abra em arco na altura do ombro, sem encolher.",sets:2,rest:60},
+  {name:"Rosca martelo com halteres",scheme:"2x10–12 · bi-set → próximo",sub:"Rosca martelo na corda",dica:"Pegada neutra, cotovelos fixos; trabalha braquial e antebraço.",sets:2,rest:0,biset:true},
+  {name:"Tríceps francês na polia (corda, acima da cabeça)",scheme:"2x10–12 · 1min15 · bi-set A",sub:"Tríceps francês com halter",dica:"De costas para a polia; desça até alongar bem e estenda.",sets:2,rest:75,biset:true}]},
+ {tab:"Sex",full:"Sexta",title:"Braços + ombro + peito superior (manutenção)",totalSets:14,minutes:50,ex:[
+  {name:"Supino inclinado no Smith",scheme:"3x8–10 · 2 min",sub:"Supino inclinado na máquina Panatta",dica:"Banco a 30°, barra abaixo da clavícula, escápulas retraídas.",sets:3,rest:120},
+  {name:"Rosca direta (barra W)",scheme:"3x8–10 · bi-set → próximo",sub:"Rosca direta na polia baixa com barra W",dica:"Cotovelos fixos, sem balançar; desça em 2–3 s.",sets:3,rest:0,biset:true},
+  {name:"Tríceps testa (barra W)",scheme:"3x8–10 · 1min30 · bi-set A",sub:"Tríceps na máquina Panatta",dica:"Desça a barra atrás da cabeça; cotovelos fechados.",sets:3,rest:90,biset:true},
+  {name:"Elevação lateral na máquina (Panatta)",scheme:"3x12–15 · 1 min",sub:"Elevação lateral com halteres",carga:"14 kg (halteres, 26/10) se usar o substituto",dica:"Suba até a altura do ombro, sem encolher.",sets:3,rest:60},
+  {name:"Rosca inversa com barra W",scheme:"2x12–15 · 1 min",sub:"Rosca inversa na polia baixa (barra reta)",dica:"Pegada pronada; punho firme, sobe até o peito; antebraço.",sets:2,rest:60}]}
+];
+const SEED={"1":{start:null,sets:{
+ "0-0":{done:false,kg:"14",reps:"10"},"0-1":{done:false,kg:"18",reps:"10"},"0-2":{done:false,kg:"18",reps:"10"},
+ "1-0":{done:false,kg:"30",reps:"8"},"1-1":{done:false,kg:"30",reps:"8"},
+ "2-0":{done:false,kg:"8",reps:"10"},"2-1":{done:false,kg:"8",reps:"10"},"2-2":{done:false,kg:"8",reps:"10"},
+ "3-0":{done:false,kg:"61",reps:"10"},"3-1":{done:false,kg:"61",reps:"10"},"3-2":{done:false,kg:"61",reps:"10"},
+ "4-0":{done:false,kg:"15",reps:"10"},"4-1":{done:false,kg:"15",reps:"10"}}}};
+const LS="treino_v3_state";
+function load(){try{const r=localStorage.getItem(LS);if(r)return JSON.parse(r);}catch(e){}return JSON.parse(JSON.stringify(SEED));}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){}}
+let state=load();
+function dayState(d){if(!state[d])state[d]={start:null,sets:{}};return state[d];}
+function sv(d,k){const ds=dayState(d);if(!ds.sets[k])ds.sets[k]={done:false,kg:"",reps:""};return ds.sets[k];}
+const pad=n=>String(n).padStart(2,"0");
+const fmt=s=>Math.floor(s/60)+":"+pad(s%60);
+const today=new Date();
+const todayStr=pad(today.getDate())+"/"+pad(today.getMonth()+1)+"/"+today.getFullYear();
+const isoDate=today.getFullYear()+"-"+pad(today.getMonth()+1)+"-"+pad(today.getDate());
+const jsDay=today.getDay();
+const todayIdx=(jsDay>=1&&jsDay<=5)?jsDay-1:0;
+let active=todayIdx;
+let openCards={};DAYS.forEach((_,i)=>openCards[i+"-0"]=true);
+let tips={};
+let rest=null;
+let exportOpen=false,restoreOpen=false,restoreMsg="";
+
+function startRest(secs,label){rest={remaining:secs,total:secs,label:label,paused:false,done:false};renderPill();}
+
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+
+function render(){
+  const day=DAYS[active];
+  // tabs
+  const tabs=document.getElementById("tabs");tabs.innerHTML="";
+  DAYS.forEach((d,i)=>{const b=el("button","tab"+(i===active?" on":""),d.tab+(i===todayIdx?"•":""));
+    b.onclick=()=>{active=i;exportOpen=false;restoreOpen=false;restoreMsg="";render();};tabs.appendChild(b);});
+  document.getElementById("daytitle").textContent=day.title;
+  // summary
+  const ds=dayState(active);
+  let doneTotal=0;day.ex.forEach((ex,ei)=>{for(let s=0;s<ex.sets;s++)if(sv(active,ei+"-"+s).done)doneTotal++;});
+  const started=ds.start!=null;
+  const elapsed=started?Math.max(0,Math.floor((Date.now()-ds.start)/1000)):0;
+  const sm=document.getElementById("summary");sm.innerHTML="";
+  const info=el("div");
+  info.appendChild(el("span","g",doneTotal+"/"+day.totalSets+" séries · "));
+  info.appendChild(el("span","clk",fmt(elapsed)));
+  info.appendChild(el("span","g"," / "+day.minutes+"min"));
+  sm.appendChild(info);
+  if(!started){const ib=el("button","iniciar","Iniciar");ib.onclick=()=>{dayState(active).start=Date.now();save();render();};sm.appendChild(ib);}
+  document.getElementById("barfill").style.width=Math.round(doneTotal/day.totalSets*100)+"%";
+  // cards
+  const cc=document.getElementById("cards");cc.innerHTML="";
+  day.ex.forEach((ex,ei)=>{
+    const okey=active+"-"+ei;
+    const card=el("div","card"+(ex.biset?" biset":""));
+    let cardDone=0;for(let s=0;s<ex.sets;s++)if(sv(active,ei+"-"+s).done)cardDone++;
+    const head=el("div","chead");
+    const left=el("div");
+    left.appendChild(el("div","cname",(ei+1)+". "+ex.name));
+    left.appendChild(el("div","cscheme",ex.scheme));
+    left.appendChild(el("div","csub","Sub: "+ex.sub));
+    head.appendChild(left);
+    head.appendChild(el("div","ccount",cardDone+"/"+ex.sets));
+    head.onclick=()=>{openCards[okey]=!openCards[okey];render();};
+    card.appendChild(head);
+    if(openCards[okey]){
+      const body=el("div","cbody");
+      let ultima="";for(let s=ex.sets-1;s>=0;s--){const v=sv(active,ei+"-"+s);if(v.done&&(v.kg||v.reps)){ultima="Última: "+(v.kg||"?")+" kg × "+(v.reps||"?")+" ("+todayStr+")";break;}}
+      const cargaLine=ex.carga?(ultima?"Carga: "+ex.carga+" · "+ultima:"Carga: "+ex.carga):ultima;
+      if(cargaLine)body.appendChild(el("div","carga",cargaLine));
+      const db=el("button","dicabtn",tips[okey]?"▾ Esconder dica":"▸ Como fazer");
+      db.onclick=()=>{tips[okey]=!tips[okey];render();};body.appendChild(db);
+      if(tips[okey])body.appendChild(el("div","dica",ex.dica));
+      for(let s=0;s<ex.sets;s++){
+        const v=sv(active,ei+"-"+s);
+        const row=el("div","srow");
+        row.appendChild(el("div","slab"+(v.done?" done":""),"S"+(s+1)));
+        const kg=el("input","sinp");kg.type="text";kg.inputMode="decimal";kg.placeholder="kg";kg.value=v.kg;
+        kg.oninput=e=>{sv(active,ei+"-"+s).kg=e.target.value;save();};
+        const rp=el("input","sinp");rp.type="text";rp.inputMode="numeric";rp.placeholder="reps";rp.value=v.reps;
+        rp.oninput=e=>{sv(active,ei+"-"+s).reps=e.target.value;save();};
+        const bt=el("button","sbtn"+(v.done?" done":""),v.done?"✓":"");
+        bt.setAttribute("aria-label","Série "+(s+1)+" feita");
+        bt.onclick=()=>{const cur=sv(active,ei+"-"+s);const nd=!cur.done;cur.done=nd;
+          if(nd){if(dayState(active).start==null)dayState(active).start=Date.now();
+            if(ex.rest>0)startRest(ex.rest,(s+2<=ex.sets)?"→ série "+(s+2):"→ próximo");}
+          save();render();};
+        row.appendChild(kg);row.appendChild(rp);row.appendChild(bt);
+        body.appendChild(row);
+      }
+      card.appendChild(body);
+    }
+    cc.appendChild(card);
+  });
+  // export/restore
+  const eb=document.getElementById("exportBox");eb.innerHTML="";
+  if(exportOpen){
+    eb.appendChild(el("div","msg",""));eb.lastChild.style.color="var(--green)";eb.lastChild.textContent="Selecione e copie o texto abaixo.";
+    const ta=el("textarea");ta.readOnly=true;ta.style.minHeight="150px";ta.value=buildExport();eb.appendChild(ta);
+  }
+  const rb=document.getElementById("restoreBox");rb.innerHTML="";
+  if(restoreOpen){
+    const ta=el("textarea");ta.id="restoreInput";ta.placeholder="Cole aqui o texto com a linha CODIGO:";ta.style.minHeight="90px";rb.appendChild(ta);
+    const rbtn=el("button","big res","Restaurar");rbtn.style.marginTop="6px";rbtn.onclick=doRestore;rb.appendChild(rbtn);
+  }
+  const rm=document.getElementById("restoreMsg");rm.textContent=restoreMsg;
+  rm.style.color=(restoreMsg==="Treino restaurado.")?"var(--yellow)":"#ff6b6b";
+  renderPill();
+}
+
+function buildExport(){
+  const day=DAYS[active];const ds=dayState(active);
+  const lines=[];lines.push("Treino "+day.full+" – "+day.title+" · "+todayStr);
+  const elapsed=ds.start?Math.max(0,Math.floor((Date.now()-ds.start)/1000)):0;
+  lines.push("Duração: "+fmt(elapsed));
+  const sObj={};
+  day.ex.forEach((ex,ei)=>{for(let s=0;s<ex.sets;s++){const v=sv(active,ei+"-"+s);
+    if(v.done){lines.push(ex.name+" — S"+(s+1)+": "+(v.kg||"?")+" kg × "+(v.reps||"?"));sObj[ei+"-"+s]={done:true,kg:v.kg,reps:v.reps};}}});
+  const payload={k:"treino_v3_"+isoDate+"_"+day.full,s:{start:ds.start||Date.now(),sets:sObj}};
+  lines.push("CODIGO:"+btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
+  return lines.join("\n");
+}
+function doRestore(){
+  const ta=document.getElementById("restoreInput");const m=ta.value.match(/CODIGO:(\S+)/);
+  if(!m){restoreMsg="Código inválido.";render();return;}
+  try{const p=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    const ds=dayState(active);
+    Object.keys(p.s.sets).forEach(k=>{ds.sets[k]={done:true,kg:p.s.sets[k].kg||"",reps:p.s.sets[k].reps||""};});
+    if(p.s.start)ds.start=p.s.start;
+    restoreMsg="Treino restaurado.";restoreOpen=false;save();render();
+  }catch(e){restoreMsg="Código inválido.";render();}
+}
+function doZerar(){const ds=dayState(active);ds.sets={};ds.start=null;rest=null;exportOpen=false;restoreOpen=false;restoreMsg="";save();render();}
+
+function renderPill(){
+  const p=document.getElementById("pill");p.innerHTML="";p.className="pill"+(rest&&rest.done?" done":"");
+  if(rest===null){
+    const l=el("span","lbl","Marque a série para descansar");
+    const t=el("span","big-time","0:00");p.appendChild(l);p.appendChild(t);return;
+  }
+  if(rest.done){
+    const d=el("div","big-time","VAI!");d.style.flex="1";p.appendChild(d);
+    const b15=el("button","pbtn white","+15");b15.onclick=()=>{rest.remaining=15;rest.total+=15;rest.done=false;renderPill();};
+    const ok=el("button","pbtn orange","OK");ok.onclick=()=>{rest=null;renderPill();};
+    p.appendChild(b15);p.appendChild(ok);return;
+  }
+  const mid=el("div");mid.style.flex="1";mid.style.minWidth="0";
+  mid.appendChild(el("div","big-time",fmt(rest.remaining)));
+  mid.appendChild(el("div","lbl",rest.paused?("Pausado · "+rest.label):rest.label));
+  p.appendChild(mid);
+  const pb=el("button","pbtn",rest.paused?"▶":"❚❚");pb.onclick=()=>{rest.paused=!rest.paused;renderPill();};
+  const b15=el("button","pbtn","+15");b15.onclick=()=>{rest.remaining+=15;rest.total+=15;renderPill();};
+  const sk=el("button","pbtn orange","Pular");sk.onclick=()=>{rest=null;renderPill();};
+  p.appendChild(pb);p.appendChild(b15);p.appendChild(sk);
+}
+
+document.getElementById("btnExport").onclick=()=>{exportOpen=!exportOpen;restoreOpen=false;render();};
+document.getElementById("btnRestore").onclick=()=>{restoreOpen=!restoreOpen;restoreMsg="";render();};
+document.getElementById("btnZerar").onclick=doZerar;
+
+setInterval(()=>{
+  if(rest&&!rest.paused&&!rest.done){if(rest.remaining<=1){rest.remaining=0;rest.done=true;}else{rest.remaining--;}renderPill();}
+  // update clock only
+  const ds=dayState(active);if(ds.start!=null){const elapsed=Math.max(0,Math.floor((Date.now()-ds.start)/1000));
+    const clk=document.querySelector("#summary .clk");if(clk)clk.textContent=fmt(elapsed);}
+},1000);
+
+render();
+</script>
+</body>
+</html>
